@@ -19,8 +19,9 @@
 CREATE_PART1=$GC_BIN"/gcloud compute instances create "
 CREATE_PART2="--image=fedora-cloud-30-20190717 " 
 CREATE_PART2=$CREATE_PART2"--image-project=cloudycluster-169515 " 
-CREATE_PART2=$CREATE_PART2"--custom-cpu=4 "
-CREATE_PART2=$CREATE_PART2"--custom-memory=3840MB "
+#CREATE_PART2=$CREATE_PART2"--custom-cpu=4 "
+#CREATE_PART2=$CREATE_PART2"--custom-memory=3840MB "
+CREATE_PART2=$CREATE_PART2"--machine-type=g1-small "
 CREATE_PART2=$CREATE_PART2"--zone="$GC_ZONE" " 
 
 ##### set defaults when needed
