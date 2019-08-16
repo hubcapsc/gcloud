@@ -1,0 +1,22 @@
+
+gcloud bash scripts
+===================
+
+"./servers.sh -a3 -i8 -m1 gc-object" will create an eight server
+orangefs cluster with one metadata server. Three verification
+attempts will be made to each server before the whole thing
+gives up.
+
+ ./servers.sh
+USAGE: ./servers.sh [args] gc-object
+-aX	X = max number of verification attempts
+-iX	X = number of io servers
+-mX	X = number of metadata servers
+
+"./servers_off.sh gc-object" will attempt to stop and delete instances
+gc-object1, gc-object2 and so forth, quitting when we try to stop
+and delete something that doesn't exist.
+
+ ./servers_off.sh
+USAGE: ./servers_off.sh object-name
+
