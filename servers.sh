@@ -1,7 +1,7 @@
 #!/bin/bash
 . ./default_set_up.sh
 . ./consume_command_line_arguments.sh
-. ./required_variables.sh GC_BIN GC_ZONE GC_OBJECT
+. ./required_variables.sh GC_BIN GC_ZONE GC_OBJECT GC_MOUNT_POINT
 
 ##### build a server create command
 #
@@ -21,8 +21,11 @@ CREATE_PART2="--image=fedora-cloud-30-20190717 "
 CREATE_PART2=$CREATE_PART2"--image-project=cloudycluster-169515 " 
 #CREATE_PART2=$CREATE_PART2"--custom-cpu=4 "
 #CREATE_PART2=$CREATE_PART2"--custom-memory=3840MB "
-CREATE_PART2=$CREATE_PART2"--machine-type=g1-small "
+# g1-small, local-ssd features are not compatible
+#CREATE_PART2=$CREATE_PART2"--machine-type=g1-small "
+CREATE_PART2=$CREATE_PART2"--machine-type=n1-standard-1 "
 CREATE_PART2=$CREATE_PART2"--zone="$GC_ZONE" " 
+CREATE_PART2=$CREATE_PART2"--local-ssd interface=nvme "
 
 ##### set defaults when needed
 if [ -z "$GC_NUM_ATTEMPTS" ]; then GC_NUM_ATTEMPTS=1; fi
@@ -43,6 +46,12 @@ do
 
 	# exit if server i doesn't seem functional.
 	. ./test_host.sh $GC_OBJECT$i $GC_NUM_ATTEMPTS
+done
+
+# format each orangefs server's nvme drive.
+for i in `seq 1 $GC_NUM_MAX`
+do
+	. ./format.sh
 done
 
 ##### makes io and metadata server lists for the orangefs config file.
@@ -70,8 +79,8 @@ done
 ##### a primary filesystem and a scratch filesystem, so we create
 ##### a config file for each and append the scratch FileSystem stanza
 ##### to the end of the primary config file.
-PATH=$PATH:/opt/orangefs/bin
-which pvfs2-config >> /dev/null 2>&1
+#PATH=$PATH:/opt/orangefs/bin
+which pvfs2-genconfig >> /dev/null 2>&1
 if [ "$?" != "0" ]
 then
 	# call cleanup script here
@@ -86,6 +95,8 @@ if [ -e "$GC_SCRATCH" ]; then rm $GC_SCRATCH; fi
 
 CMD="pvfs2-genconfig --quiet "
 CMD=$CMD"--protocol tcp "
+CMD=$CMD"--storage  /mnt/data "
+CMD=$CMD"--metadata /mnt/meta "
 CMD=$CMD"--ioservers "$GC_IO_LIST" "
 CMD=$CMD"--metaservers "$GC_META_LIST" "
 eval $CMD$GC_ORANGEFS
