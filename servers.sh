@@ -1,7 +1,8 @@
 #!/bin/bash
+set -x
 . ./default_set_up.sh
 . ./consume_command_line_arguments.sh
-. ./required_variables.sh GC_BIN GC_ZONE GC_OBJECT GC_MOUNT_POINT
+. ./required_variables.sh GC_BIN GC_ZONE GC_PROJECT GC_MOUNT_POINT GC_OBJECT
 
 ##### build a server create command
 #
@@ -17,10 +18,8 @@
 #	2	2048
 #	3	3840
 CREATE_PART1=$GC_BIN"/gcloud compute instances create "
-CREATE_PART2="--image=fedora-cloud-30-20190717 " 
-CREATE_PART2=$CREATE_PART2"--image-project=cloudycluster-169515 " 
-#CREATE_PART2=$CREATE_PART2"--custom-cpu=4 "
-#CREATE_PART2=$CREATE_PART2"--custom-memory=3840MB "
+CREATE_PART2="--image="$GC_IMAGE" "
+CREATE_PART2=$CREATE_PART2"--image-project="$GC_PROJECT" " 
 # g1-small, local-ssd features are not compatible
 #CREATE_PART2=$CREATE_PART2"--machine-type=g1-small "
 CREATE_PART2=$CREATE_PART2"--machine-type=n1-standard-1 "
