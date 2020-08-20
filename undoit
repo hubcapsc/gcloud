@@ -1,0 +1,9 @@
+#!/bin/sh
+set -x
+umount /pvfsmnt
+umount /scratch
+sleep 1
+killall pvfs2-client
+#killall pvfs2-server
+sleep 1
+rmmod orangefs.ko

@@ -2,6 +2,23 @@
 gcloud bash scripts
 ===================
 
+These scripts were developed and tested on Fedora where the orangefs
+userspace package can be dnf installed. The servers.sh script makes use
+of some commands from the package, pvfs2-genconfig in particular. Installation
+of the package results in orangefs commands residing along the default
+search path. If these scripts are run from someplace other than
+fedora, the orangefs userspace tools will have to be installed
+some other way, from an downloaded rpm or built from source. This is
+fine, but you'll have to insure that the orangefs commands are in the $PATH.
+
+These scripts build an orangefs server cluster whose instances are
+based on an image in the google cloud. The image will need to support
+ext4 and be based on some recent kernel version that includes the
+Orangefs kernel module. Orangefs first went upstream in Linux 4.3
+and had major page cache enhancements at 5.2. The image will need
+to have the orangefs userspace parts installed and servers.sh expects
+them to be installed in /opt/orangefs.
+
 "./servers.sh -a3 -i8 -m1 gc-object" will create an eight server
 orangefs cluster with one metadata server. Three verification
 attempts will be made to each server before the whole thing

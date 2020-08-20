@@ -9,9 +9,5 @@ GC_MOUNT_POINT=/mnt
 #   linux to be configured to support ext4
 #   linux to be configured to support orangefs
 #   orangefs userspace to be installed in /opt/orangefs
-#   make a new file in /etc/profile.d called custom.sh
-#   add /opt/orangefs/bin and /opt/orangefs/sbin to PATH
-#       in /etc/profile.d/custom.sh and export PATH
-#   chmod +x /etc/profile.d/custom.sh
 #         
 GC_IMAGE=hubcap-linuxbcf87687-orangefs65ab0d29

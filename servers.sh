@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# TODO - you don't want a bunch of old gcloud hosts
+#        stacked up in your .ssh/known_hosts file,
+#        this script might freak out over the "man
+#        in the middle" warning... how to automate?
+#
 set -x
 . ./default_set_up.sh
 . ./consume_command_line_arguments.sh
@@ -48,10 +54,10 @@ do
 done
 
 # format each orangefs server's nvme drive.
-for i in `seq 1 $GC_NUM_MAX`
-do
+#for i in `seq 1 $GC_NUM_MAX`
+#do
 	. ./format.sh
-done
+#done
 
 ##### makes io and metadata server lists for the orangefs config file.
 for i in `seq 1 $GC_NUM_IO`
@@ -125,16 +131,30 @@ done
 # create file system storage on the servers and start them.
 for i in `seq 1 $GC_NUM_MAX`
 do
-	ssh ${GC_ADDR[i]} sudo pvfs2-server ./orangefs.conf -f
-	ssh ${GC_ADDR[i]} sudo pvfs2-server ./orangefs.conf
+	ssh ${GC_ADDR[i]} sudo /opt/orangefs/sbin/pvfs2-server \
+				./orangefs.conf -f
+	ssh ${GC_ADDR[i]} sudo /opt/orangefs/sbin/pvfs2-server ./orangefs.conf
 done
 
+# check to see that the servers are probably running...
+for i in `seq 1 $GC_NUM_MAX`
+do
+	ssh ${GC_ADDR[i]} netstat -nap \| grep 0.0.0.0:3334 > /dev/null 2>&1
+	if [ "$?" != "0" ]
+	then
+		echo "server :${GC_ADDR[i]}: not running, quiting."
+		exit 1
+	fi
+done
 
+# copy the pvfs2tab file to GC_ADDR[1].
+	scp ./pvfs2tab ${GC_ADDR[1]}:
 
+# copy the startup scripts to GC_ADDR[1].
+	scp ./doit ${GC_ADDR[1]}:
+	scp ./undoit ${GC_ADDR[1]}:
 
+# list the servers we've built.
+	gcloud compute instances list --filter="name~$GC_OBJECT"
 
-
-
-
-
-
+echo "ssh to "${GC_ADDR[1]}" and run doit."

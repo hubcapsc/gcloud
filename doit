@@ -1,0 +1,46 @@
+#!/bin/sh
+set -x
+# change this if orangefs isn't installed in /opt/orangefs. 
+OFS_INSTALL=orangefs
+
+# create a pvfs main mount point if there's not one.
+if [ ! -d /pvfsmnt ]
+then
+	mkdir /pvfsmnt
+fi
+
+# create a pvfs scratch mount point if there's not one.
+# this is specificly for running xfstests.
+if [ ! -d /scratch ]
+then
+	mkdir /scratch
+fi
+
+cp ./pvfs2tab /etc
+
+if [ -e /lib/modules/`uname -r`/kernel/fs/orangefs/orangefs.ko ]
+then
+	insmod /lib/modules/`uname -r`/kernel/fs/orangefs/orangefs.ko
+elif [ -e /lib/modules/`uname -r`/kernel/fs/orangefs/orangefs.ko.xz ]
+then
+	insmod /lib/modules/`uname -r`/kernel/fs/orangefs/orangefs.ko.xz
+else
+	echo "tilt"
+	exit 1
+fi
+sleep 1
+
+echo /opt/"$OFS_INSTALL"/lib > /etc/ld.so.conf.d/pvfs.conf
+ldconfig
+sleep 1
+
+# can set gossip mask on pvfs2-client with: --gossip-mask=all
+# can set log file location on pvfs2-client with: -L /path/to/log.file
+/opt/"$OFS_INSTALL"/sbin/pvfs2-client -L /var/log/client.log -p /opt/"$OFS_INSTALL"/sbin/pvfs2-client-core
+sleep 1
+
+mount -t pvfs2 tcp://`hostname`:3334/orangefs /pvfsmnt -o acl
+mount -t pvfs2 tcp://`hostname`:3334/scratch /scratch -o acl
+sleep 1
+echo none > /sys/kernel/debug/orangefs/kernel-debug
+ls /pvfsmnt
