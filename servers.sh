@@ -8,7 +8,8 @@
 set -x
 . ./default_set_up.sh
 . ./consume_command_line_arguments.sh
-. ./required_variables.sh GC_BIN GC_ZONE GC_PROJECT GC_MOUNT_POINT GC_OBJECT
+. ./required_variables.sh GC_BIN GC_ZONE GC_PROJECT GC_MOUNT_POINT GC_OBJECT \
+	GC_MACHINE_TYPE
 
 ##### build a server create command
 #
@@ -28,7 +29,7 @@ CREATE_PART2="--image="$GC_IMAGE" "
 CREATE_PART2=$CREATE_PART2"--image-project="$GC_PROJECT" " 
 # g1-small, local-ssd features are not compatible
 #CREATE_PART2=$CREATE_PART2"--machine-type=g1-small "
-CREATE_PART2=$CREATE_PART2"--machine-type=n1-standard-1 "
+CREATE_PART2=$CREATE_PART2"--machine-type="$GC_MACHINE_TYPE" "
 CREATE_PART2=$CREATE_PART2"--zone="$GC_ZONE" " 
 CREATE_PART2=$CREATE_PART2"--local-ssd interface=nvme "
 

@@ -10,4 +10,5 @@ GC_MOUNT_POINT=/mnt
 #   linux to be configured to support orangefs
 #   orangefs userspace to be installed in /opt/orangefs
 #         
-GC_IMAGE=hubcap-linuxbcf87687-orangefs65ab0d29
+GC_IMAGE=hubcap-linuxbcf87687-orangefs65ab0d29-n1-4
+GC_MACHINE_TYPE=n1-standard-4
